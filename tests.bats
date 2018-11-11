@@ -23,3 +23,17 @@
     run ./munemo -i -100
     [[ "$output" == "xabiba" ]]
 }
+
+@test "decode strings to positive integers" {
+    run ./munemo -s "yoshida"
+    [[ "$output" == "947110" ]]
+    run ./munemo -s "bajo"
+    [[ "$output" == "34" ]]
+    run ./munemo -s "tonukatsu"
+    [[ "$output" == "79523582" ]]
+}
+
+@test "decode strings to negative integers" {
+    run ./munemo -s "xabaji"
+    [[ "$output" == "-31" ]]
+}

@@ -61,6 +61,38 @@ to_s() {
     echo $string
 }
 
+_contains() {
+    local value=$1
+
+    for i in "${!SYLS[@]}"; do
+        if [ "${SYLS[$i]}" = "${value}" ]; then
+            echo "${i}";
+        fi
+    done
+}
+
+# Converts strings to integer numbers
+to_i() {
+    local s="$1"
+    local sign=1
+    local result=0
+
+    if [ "${s:0:2}" = "$NEG" ]; then
+        sign=-1
+        s=${s#$NEG}
+    fi
+
+    while [ "${#s}" -gt 0 ]; do
+        i2=$(_contains ${s:0:2})
+        i3=$(_contains ${s:0:3})
+        i=${i2:-$i3}
+        result=$(( ${SYL_COUNT} * result + i ))
+        s=${s#${SYLS[$i]}}
+    done
+
+    echo $(( $sign * $result ))
+}
+
 # Print usage information and exit
 usage() {
     local scriptname="${0##*/}"
@@ -73,8 +105,8 @@ exit 0
 }
 
 main() {
-    local integer
-    local string
+    local integer=""
+    local string=""
 
     local OPTIND=0
     while getopts "i:s:h" opt; do
@@ -93,7 +125,9 @@ main() {
     shift $(( OPTIND - 1 ))
 
     if [[ ! -z "$integer" ]]; then
-        to_s $integer
+        to_s "$integer"
+    elif [[ ! -z "$string" ]]; then
+        to_i "$string"
     fi
 }
 
