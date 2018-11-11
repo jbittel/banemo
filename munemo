@@ -61,8 +61,40 @@ to_s() {
     echo $string
 }
 
+# Print usage information and exit
+usage() {
+    local scriptname="${0##*/}"
+cat <<- EOF
+usage: $scriptname (-i|-s) (integer|string)
+    -i <integer>
+    -s <string>
+EOF
+exit 0
+}
+
 main() {
-	to_s $1
+    local integer
+    local string
+
+    local OPTIND=0
+    while getopts "i:s:h" opt; do
+        case $opt in
+            i) integer="$OPTARG";;
+            s) string="$OPTARG";;
+            h) usage;;
+            *) echo "error: unknown option $opt" >&2; exit 1;;
+        esac
+    done
+
+    if (( OPTIND == 1 )); then
+        usage
+    fi
+
+    shift $(( OPTIND - 1 ))
+
+    if [[ ! -z "$integer" ]]; then
+        to_s $integer
+    fi
 }
 
 main "${@}"
